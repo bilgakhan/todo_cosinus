@@ -9,10 +9,12 @@ class AddTaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AddDataProvider provider = Provider.of<AddDataProvider>(context);
+    GetTaskProvider getTask = Provider.of<GetTaskProvider>(context);
     return ChangeNotifierProvider(
       create: (context) => AddDataProvider(),
       builder: (context, child) {
         return Scaffold(
+          backgroundColor: const Color(0xffd6d7ef),
           appBar: AppBar(
             title: const Text('tasks'),
           ),
@@ -37,7 +39,7 @@ class AddTaskPage extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               await provider.addData();
-              await context.read<GetTaskProvider>().getDataDb();
+              await getTask.getDataDb();
               provider.taskController.clear();
               provider.titleController.clear();
               Navigator.pop(context);

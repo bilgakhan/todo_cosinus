@@ -1,51 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/provider/get_data_provider.dart';
+import 'package:todo_app/view/completed_tasks_page.dart';
+import 'package:todo_app/view/main_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int currentIndex = 0;
+  final List<Widget> _screens = [MainScreen(), CompleteTasksPage()];
+
+  @override
   Widget build(BuildContext context) {
-    GetTaskProvider provider = Provider.of<GetTaskProvider>(context);
     return ChangeNotifierProvider(
       create: (context) => GetTaskProvider(),
       builder: (context, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('tasks'),
-            leading: IconButton(
-                onPressed: () async {
-                  await Hive.box('todo').clear();
-                },
-                icon: Icon(Icons.delete)),
+          backgroundColor: const Color(0xffd6d7ef),
+          body: _screens[currentIndex],
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              Navigator.pushNamed(context, 'add');
+            },
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
           ),
-          body: Builder(builder: (context) {
-            if (provider.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (provider.error.isNotEmpty) {
-              return Center(
-                child: Text(provider.error),
-              );
-            } else {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(provider.success[index]['title']),
-                    subtitle: Text(provider.success[index]['task']),
-                  );
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: currentIndex,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list),
+                label: 'All',
+              ),
+              BottomNavigationBarItem(
+                icon: InkWell(
+                  child: Icon(Icons.check),
+                ),
+                label: 'Completed',
+              ),
+            ],
+            onTap: (v) {
+              setState(
+                () {
+                  currentIndex = v;
                 },
-                itemCount: provider.success.length,
               );
-            }
-          }),
-          floatingActionButton: FloatingActionButton(onPressed: () async {
-            Navigator.pushNamed(context, 'add');
-          }),
+            },
+          ),
         );
       },
     );

@@ -12,7 +12,7 @@ class RouteGenerate {
   Route? onGenerate(RouteSettings s) {
     switch (s.name) {
       case "/":
-        return _navigate(const HomePage());
+        return _navigate( HomePage());
       case "complete":
         _navigate(const CompleteTasksPage());
       case "add":
